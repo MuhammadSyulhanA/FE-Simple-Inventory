@@ -25,6 +25,10 @@
         </router-link>
 
         <router-link to="/laporan" class="block px-6 py-3 hover:bg-blue-600"> Laporan </router-link>
+
+        <router-link to="/rekap" class="block px-6 py-3 hover:bg-blue-600">
+          Rekap Transaksi
+        </router-link>
       </nav>
     </aside>
 

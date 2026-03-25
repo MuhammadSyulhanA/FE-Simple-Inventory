@@ -6,6 +6,7 @@ import BarangView from '../views/barang/BarangView.vue'
 import StokMasukView from '../views/stok/StokMasukView.vue'
 import StokKeluarView from '../views/stok/StokKeluarView.vue'
 import LaporanView from '../views/laporan/LaporanView.vue'
+import RekapView from '../views/laporan/RekapView.vue'
 
 const routes = [
   {
@@ -40,6 +41,10 @@ const routes = [
       {
         path: '/laporan',
         component: LaporanView,
+      },
+      {
+        path: '/rekap',
+        component: RekapView,
       },
     ],
   },
