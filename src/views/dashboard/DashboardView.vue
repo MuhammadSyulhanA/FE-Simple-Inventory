@@ -36,6 +36,18 @@
       </div>
     </div>
 
+    <!-- FILTER TAHUN -->
+
+    <div class="mb-4 flex gap-2 items-center">
+      <label class="font-medium"> Tahun: </label>
+
+      <select v-model="selectedYear" @change="updateChart" class="border px-3 py-2 rounded">
+        <option v-for="year in availableYears" :key="year" :value="year">
+          {{ year }}
+        </option>
+      </select>
+    </div>
+
     <!-- CHART -->
 
     <div class="bg-white p-6 rounded shadow">
@@ -50,6 +62,10 @@
 import { ref, onMounted } from 'vue'
 import Chart from 'chart.js/auto'
 
+const selectedYear = ref(new Date().getFullYear())
+const availableYears = ref([])
+let chartInstance = null
+
 const chartCanvas = ref(null)
 
 const totalBarang = ref(0)
@@ -59,7 +75,8 @@ const totalKeluar = ref(0)
 
 onMounted(() => {
   loadStats()
-  createChart()
+  loadAvailableYears()
+  updateChart()
 })
 
 /* LOAD DATA */
@@ -82,7 +99,7 @@ const loadStats = () => {
 
 /* CHART */
 
-const createChart = () => {
+const updateChart = () => {
   const masuk = JSON.parse(localStorage.getItem('stokMasuk') || '[]')
 
   const keluar = JSON.parse(localStorage.getItem('stokKeluar') || '[]')
@@ -107,18 +124,30 @@ const createChart = () => {
   const dataKeluar = new Array(12).fill(0)
 
   masuk.forEach((item) => {
-    const month = new Date(item.tanggal).getMonth()
+    const date = new Date(item.tanggal)
 
-    dataMasuk[month] += Number(item.jumlah)
+    if (date.getFullYear() == selectedYear.value) {
+      const month = date.getMonth()
+
+      dataMasuk[month] += Number(item.jumlah)
+    }
   })
 
   keluar.forEach((item) => {
-    const month = new Date(item.tanggal).getMonth()
+    const date = new Date(item.tanggal)
 
-    dataKeluar[month] += Number(item.jumlah)
+    if (date.getFullYear() == selectedYear.value) {
+      const month = date.getMonth()
+
+      dataKeluar[month] += Number(item.jumlah)
+    }
   })
 
-  new Chart(
+  if (chartInstance) {
+    chartInstance.destroy()
+  }
+
+  chartInstance = new Chart(
     chartCanvas.value,
 
     {
@@ -143,5 +172,27 @@ const createChart = () => {
       },
     }
   )
+}
+
+const loadAvailableYears = () => {
+  const masuk = JSON.parse(localStorage.getItem('stokMasuk') || '[]')
+
+  const keluar = JSON.parse(localStorage.getItem('stokKeluar') || '[]')
+
+  const years = new Set()
+
+  masuk.forEach((item) => {
+    years.add(new Date(item.tanggal).getFullYear())
+  })
+
+  keluar.forEach((item) => {
+    years.add(new Date(item.tanggal).getFullYear())
+  })
+
+  availableYears.value = Array.from(years)
+
+  if (availableYears.value.length === 0) {
+    availableYears.value = [new Date().getFullYear()]
+  }
 }
 </script>
